@@ -3,8 +3,6 @@ package com.manolo.lor.spanner;
 import java.util.ArrayList;
 import java.util.Map;
 
-import jakarta.servlet.http.HttpServletRequest;
-
 public class LorEngineRequest {
 
     private String characters[];
