@@ -3,6 +3,7 @@ resource "google_spanner_instance" "graph-demo" {
   name         = "graph-demo"
   display_name = "Spanner LoR Graph Demo"
   processing_units    = 100
+  edition      = "ENTERPRISE"
 }
 
 resource "google_spanner_database" "lor_graph_db" {
