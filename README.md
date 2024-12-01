@@ -168,7 +168,7 @@ SELECT 'Ontology', count(*) as total from Ontology
 
 Raw data is loaded into tables Reference (1444 rows) and Ontology (75 rows).
 
-Now will do some transformations to differentiate entities between “Persons” and “Places”, nad create the proper relations.
+Now will do some transformations to differentiate entities between “Persons” and “Places”, and create the proper relations.
 
 From Spanner Data Studio will do some data movement:
 
@@ -204,7 +204,7 @@ SELECT 'PlacesPersons', count(*) as total from PlacesPersons
 
 See data loaded: Persons (43 rows), Places (24 rows), PlacesPersons (500 rows)
 
-##Create graph
+## Create graph
 
 Next step is creating the property graph in Spanner. 
 
@@ -224,7 +224,7 @@ CREATE OR REPLACE PROPERTY GRAPH LoRGraph
   );
 ```
 
-**Checkpoint**: Let us find the Frodo’s relations:
+**Checkpoint**: Let us find Frodo’s relations:
 
 ```
 GRAPH LoRGraph 
@@ -332,19 +332,19 @@ Choose options:
 * single-page app: Yes
 * Automatic builds: No
 
-Edit file **firebase.json**. Change the value to your own region.
+Edit file **firebase.json**. Add the code block  "source": "/api/\*", above "source": "\*\*" **Change the region value to your own region**.
 
 ```
 ...
 "rewrites": [
-      **{
+      {
         "source": "/api/*",
         "run": {
           "serviceId": "spanner-lor",  
           "region": "europe-southwest1",    
           "pinTag": true  
         }            
-      },**
+      },
       {
         "source": "**",
         "destination": "/index.html"
