@@ -7,7 +7,7 @@ Source data come from [this repo](https://github.com/morethanbooks/projects/tree
 
 # Build
 
-We are going to build this end-to-end architecture, incluing a user interface, a microservice and a Spanner database. ![Solution architecture](img/lor_architecture.jpg?raw=true)
+We are going to build this end-to-end architecture, including a user interface, a microservice and a Spanner database. ![Solution architecture](img/lor_architecture.jpg?raw=true)
 
 ## Prerequisites
 
@@ -16,33 +16,30 @@ We are going to build this end-to-end architecture, incluing a user interface, a
 
 ## Environment
 
-Open a CloudShell session in the Google Cloud Console. Run the following, using your own values for the fields in **bold** only
+Open a CloudShell session in the Google Cloud Console. Run the following, using your own values for the fields PROJECT and REGION.
 
 ```
-PROJECT=**mh-test-lor-4**
-REGION=**europe-southwest1**
+PROJECT=mh-test-lor-4
+REGION=europe-southwest1
 SPANNER_INSTANCE_ID=graph-demo
 LOR_DB=lor_graph_db
 REPOSITORY=repo-$REGION
 IMAGE=spanner-lor
 SERVICE=spanner-lor
 
-
 gcloud config set project $PROJECT
 PROJECT_NUMBER=$(gcloud projects describe $PROJECT --format="value(projectNumber)")
-
 
 gcloud services enable compute.googleapis.com
 gcloud services enable iam.googleapis.com
 gcloud services enable cloudresourcemanager.googleapis.com
-
 ```
 
 ## Build infrastructure
 
 We will use terraform scripts included in the repo.Infra created:
 
-* VPC network “default”
+* VPC network “lor-network”
 * GCS bucket “$PROJECT”
 * Spanner instance, database and tables
 
@@ -51,7 +48,6 @@ git clone https://github.com/mahurtado/LoRSpannerGraph
 cd LoRSpannerGraph/infra-lor/
 echo project = \"$PROJECT\" >> my-config.tfvars
 echo region  = \"$REGION\" >> my-config.tfvars
-
 
 terraform init
 terraform plan -var-file=my-config.tfvars 
@@ -70,32 +66,19 @@ Download source files and prepare for loading. Then move to GCS bucket.
 
 ```
 curl -O https://raw.githubusercontent.com/morethanbooks/projects/master/LotR/ontologies/ontology.csv
-
-
 tail -n +2 ontology.csv > ontology.tmp && mv ontology.tmp ontology.csv
-
-
 sed $'s/\t/:/g' ontology.csv > ontology.tmp && mv ontology.tmp ontology.csv
-
 
 gcloud storage cp ontology.csv gs://$PROJECT
 
-
 curl -O https://raw.githubusercontent.com/morethanbooks/projects/master/LotR/tables/networks-id-3books.csv
-
-
 tail -n +2 networks-id-3books.csv > networks-id-3books.tmp && mv networks-id-3books.tmp  networks-id-3books.csv
-
-
 sed $'s/,/:/g' networks-id-3books.csv >  networks-id-3books.tmp && mv networks-id-3books.tmp networks-id-3books.csv
-
 
 gcloud storage cp networks-id-3books.csv gs://$PROJECT
 
-
 rm ontology.csv
 rm networks-id-3books.csv
-
 ```
 
 Now we will use this [Dataflow template](https://cloud.google.com/dataflow/docs/guides/templates/provided/cloud-storage-to-cloud-spanner) to import files into Spanner. For each file, create the [manifest file](https://cloud.google.com/spanner/docs/import-export-csv#create-json-manifest) and upload to our GCS bucket:
@@ -158,7 +141,6 @@ databaseId=$LOR_DB,\
 importManifest=gs://$PROJECT/ontology_load.json,\
 columnDelimiter=:
 
-
 gcloud dataflow jobs run load_references \
     --gcs-location gs://dataflow-templates-$REGION/latest/GCS_Text_to_Cloud_Spanner \
     --region $REGION --disable-public-ips --subnetwork=https://www.googleapis.com/compute/v1/projects/$PROJECT/regions/$REGION/subnetworks/lor-network-region \
@@ -170,7 +152,7 @@ columnDelimiter=:
 
 ```
 
-**Checkpoint**. Go to Dataflow jobs in the console:
+**Checkpoint**. Go to Dataflow jobs in the console, see the jobs running:
 
 ![Checkpoint](img/checkpoint_dataflow.jpg?raw=true)
 
@@ -194,10 +176,8 @@ From Spanner Data Studio will do some data movement:
 INSERT INTO Persons (Id, Label, FreqSum, Subtype, Gender)
 SELECT OntologyId, Label, FreqSum, Subtype, Gender FROM Ontology WHERE Type='per';
 
-
 INSERT INTO Places (Id, Label, FreqSum)
 SELECT OntologyId, Label, FreqSum FROM Ontology WHERE Type='pla';
-
 
 INSERT INTO PlacesPersons (IdPlace, IdPerson)
 select A.IdSource,A.IdTarget from Reference A 
@@ -205,13 +185,11 @@ join Ontology B on A.IdSource=B.OntologyId
 where B.Type='pla'
 and exists (select true from Persons C where C.Id=A.IdTarget);
 
-
 INSERT INTO PlacesPersons (IdPlace, IdPerson)
 select A.IdTarget,A.IdSource from Reference A 
 join Ontology B on A.IdTarget=B.OntologyId 
 where B.Type='pla'
 and exists (select true from Persons C where C.Id=A.IdSource);
-
 ```
 
 **Checkpoint**: Run from the Spanner Data Studio
@@ -222,7 +200,6 @@ UNION ALL
 SELECT 'Places', count(*) as total from Places
 UNION ALL
 SELECT 'PlacesPersons', count(*) as total from PlacesPersons
-
 ```
 
 See data loaded: Persons (43 rows), Places (24 rows), PlacesPersons (500 rows)
@@ -265,23 +242,18 @@ Now let us buld the back end service in Cloud Run. This demo uses Java SpringBoo
 ```
 cd $HOME/LoRSpannerGraph/backend-lor/
 
-
 # Policies
 gcloud org-policies reset constraints/iam.allowedPolicyMemberDomains --project=$PROJECT
 
-
 # Build app
 mvn clean install -DskipTests
-
 
 # Build container
 gcloud auth configure-docker
 docker build --tag=$REGION-docker.pkg.dev/$PROJECT/$REPOSITORY/$IMAGE:latest .
 
-
 # Push to artifact registry
 docker push $REGION-docker.pkg.dev/$PROJECT/$REPOSITORY/$IMAGE:latest
-
 
 # Deploy cloud run service
 gcloud run deploy $SERVICE --image $REGION-docker.pkg.dev/$PROJECT/$REPOSITORY/$IMAGE:latest \
@@ -290,14 +262,13 @@ gcloud run deploy $SERVICE --image $REGION-docker.pkg.dev/$PROJECT/$REPOSITORY/$
 --allow-unauthenticated
 SPANNER_INSTANCE_ID=graph-demo
 LOR_DB=lor_graph_db
-
 ```
 
 Save the endpoint created to a variable:
 Example URL: https://spanner-lor-191614030982.europe-southwest1.run.app
 
 ```
-SERVICE_ENDPOINT=https://$SERVICE-$PROJECT_NUMBER.europe-southwest1.run.app
+SERVICE_ENDPOINT=https://$SERVICE-$PROJECT_NUMBER.$REGION.run.app
 ```
 
 **Checkpoint**: Call the service from command line:
@@ -342,7 +313,7 @@ npm install -g firebase-tools
 firebase login
 ```
 
-NOTE: If see this error or similar:
+NOTE: If this error or similar appear:
 Firebase CLI v13.20.2 is incompatible with Node.js v16.4.0 Please upgrade Node.js to version >=18.0.0 || >=20.0.0
 Then run:
 ```
@@ -361,8 +332,8 @@ Choose options:
 * single-page app: Yes
 * Automatic builds: No
 
+Edit file **firebase.json**. Change the value to your own region.
 
-Edit file **firebase.json**, add the text in **bold**. Change to your own region.
 ```
 ...
 "rewrites": [
