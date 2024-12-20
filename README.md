@@ -7,7 +7,7 @@ Source data come from [this repo](https://github.com/morethanbooks/projects/tree
 
 # Build
 
-We are going to build this end-to-end architecture, including a user interface, a microservice and a Spanner database. ![Solution architecture](img/lor_architecture.jpg?raw=true)
+We are going to build this end-to-end architecture: ![Solution architecture](img/lor_architecture.jpg?raw=true)
 
 ## Prerequisites
 
@@ -235,9 +235,15 @@ RETURN p1.id as p1_id, p2.id  as p2_id;
 
 It should return 38 results
 
+## Example Notebook
+
+At this point you can run the [example notebook](notebook_lor/LoR_Spanner_Graph.ipynb)
+
+![Notebook graph](img/notebook_1.jpg?raw=true)
+
 ## Build Cloud Run backend service
 
-Now let us buld the back end service in Cloud Run. This demo uses Java SpringBoot. Continue fro CloudShell session:
+Now let us buld the back end service in Cloud Run. This demo uses Java SpringBoot. Continue from CloudShell session:
 
 ```
 cd $HOME/LoRSpannerGraph/backend-lor/
@@ -267,6 +273,7 @@ LOR_DB=lor_graph_db
 Save the endpoint created to a variable:
 Example URL: https://spanner-lor-191614030982.europe-southwest1.run.app
 
+It has this format:
 ```
 SERVICE_ENDPOINT=https://$SERVICE-$PROJECT_NUMBER.$REGION.run.app
 ```
