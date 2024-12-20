@@ -1,5 +1,12 @@
 # Lord of The Rings Spanner Graph Demo
 
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
+[![Python](https://img.shields.io/badge/python-3.x-blue.svg)](https://www.python.org/)
+[![Docker](https://img.shields.io/badge/docker-%230db7ed.svg)](https://www.docker.com/)
+[![Terraform](https://img.shields.io/badge/terraform-%235835CC.svg)](https://www.terraform.io/)
+[![SpringBoot](https://img.shields.io/badge/SpringBoot-6DB33F?style=flat-square&logo=Spring&logoColor=white)](https://www.terraform.io/)
+[![Angular](https://img.shields.io/badge/-Angular-DD0031?style=flat-square&logo=angular&logoColor=white)](https://www.terraform.io/)
+
 This demo shows a graph example based in the *Lord of the Rings* characters and places. 
 Source data come from [this repo](https://github.com/morethanbooks/projects/tree/master/LotR) from [José Calvo](https://www.morethanbooks.eu/graph-network-of-the-lord-of-the-rings/).
 
@@ -19,8 +26,8 @@ We are going to build this end-to-end architecture: ![Solution architecture](img
 Open a CloudShell session in the Google Cloud Console. Run the following, using your own values for the fields PROJECT and REGION.
 
 ```
-PROJECT=mh-test-lor-4
-REGION=europe-southwest1
+PROJECT=[YOUR_VALUE_HERE]
+REGION=[YOUR_VALUE_HERE]
 SPANNER_INSTANCE_ID=graph-demo
 LOR_DB=lor_graph_db
 REPOSITORY=repo-$REGION
@@ -390,3 +397,7 @@ Click on “View Query” to see what is running in Spanner:
 
 # Contributing
 Pull requests are welcome. 
+
+## License
+
+Apache License 2.0. See the [LICENSE](LICENSE) file.
