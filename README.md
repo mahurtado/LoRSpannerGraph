@@ -237,7 +237,7 @@ It should return 38 results
 
 ## Example Notebook
 
-At this point you can run the [example notebook](notebook_lor/LoR_Spanner_Graph.ipynb)
+At this point you can run the [example notebook](notebook-lor/LoR_Spanner_Graph.ipynb)
 
 ![Notebook graph](img/notebook_1.jpg?raw=true)
 
