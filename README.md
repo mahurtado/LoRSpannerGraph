@@ -400,4 +400,4 @@ Pull requests are welcome.
 
 ## License
 
-Apache License 2.0. See the [LICENSE](LICENSE) file.
+Apache License 2.0. See the [LICENSE](LICENSE.txt) file.
