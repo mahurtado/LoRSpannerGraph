@@ -26,7 +26,7 @@ We are going to build this end-to-end architecture: ![Solution architecture](img
 Open a CloudShell session in the Google Cloud Console. Run the following, using your own values for the fields PROJECT and REGION.
 
 ```
-PROJECT=[YOUR_VALUE_HERE]
+PROJECT=[YOUR_PROJECT_ID_HERE]
 REGION=[YOUR_VALUE_HERE]
 SPANNER_INSTANCE_ID=graph-demo
 LOR_DB=lor_graph_db
@@ -324,7 +324,7 @@ Install Firebase CLI:
 
 ```
 npm install -g firebase-tools
-firebase login
+firebase login --no-localhost
 ```
 
 NOTE: If this error or similar appear:
